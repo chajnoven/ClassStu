@@ -1,0 +1,95 @@
+#container{
+	font-size:20px;
+	text-align: center;
+	background-color:#99D3F5;
+	width: auto ;
+	height: auto;
+	border-radius: 4px;
+	padding: 4px 12px;
+	position: fixed;
+	top: 5%;
+	left: 0;
+	right: 0;
+	margin:0 auto;
+
+}
+
+#getJPG {
+            position: relative;/*绝对定位!*/
+            display: inline-block;/*设置为行内元素*/
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+        }
+        #getJPG input {
+            position: absolute;/*相对定位*/
+            right: 0;
+            top: 0;
+            opacity: 0;/*将上传组件设置为透明的*/
+            font-size: 100px;
+        }
+        #getJPG:hover {
+            background: #AADDFF;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
+#img{
+	position: relative;/*绝对定位!*/
+            display: inline-block;/*设置为行内元素*/
+            background: #D0EEFF;
+            border: 1px solid #99D3F5;
+            border-radius: 4px;
+            padding: 4px 12px;
+            overflow: hidden;
+            color: #1E88C7;
+            text-decoration: none;
+            text-indent: 0;
+            line-height: 20px;
+}
+
+a{
+	position: relative;/*绝对定位!*/
+	display: inline-block;/*设置为行内元素*/
+	background: #D0EEFF;
+	border: 1px solid ;
+	border-radius: 4px;
+	padding: 4px 12px;
+	overflow: hidden;
+	color: #1E88C7;
+	text-decoration: none;
+	text-indent: 0;
+	line-height: 20px;
+
+}
+img{
+	width: auto;
+	height: auto;
+	max-width: 500px;
+	max-height: 500px;
+}
+button{
+	position: relative;/*绝对定位!*/
+	display: inline-block;/*设置为行内元素*/
+	background: #D0EEFF;
+	border: 1px solid #99D3F5;
+	border-radius: 4px;
+	padding: 4px 12px;
+	overflow: hidden;
+	color: #1E88C7;
+	text-decoration: none;
+	text-indent: 0;
+	line-height: 20px;
+}
+button:hover {
+            background: #AADDFF;
+            border-color: #78C3F3;
+            color: #004974;
+            text-decoration: none;
+        }
