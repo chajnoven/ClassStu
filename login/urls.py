@@ -4,3 +4,4 @@ app_name = 'login'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
 ]'''
+

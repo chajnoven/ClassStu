@@ -1,5 +1,5 @@
 from django.db import models
-
+from rest_framework.permissions import IsAuthenticated
 # Create your models here.
 
 
@@ -24,6 +24,7 @@ class User(models.Model):
         return self.name
 
     class Meta:
+        #db_table = "user"
         ordering = ["-c_time"]
         verbose_name = "用户"
         verbose_name_plural = "用户"
@@ -39,8 +40,15 @@ class Room(models.Model):
 class Class(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    stu_numbers = models.IntegerField(max_length=500)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+
+    def __str__(self):
+        return self.room
+
+    class Meta:
+        db_table = 'class'
     #上课时间
 '''class ConfirmString(models.Model):
     code = models.CharField(max_length=256)
