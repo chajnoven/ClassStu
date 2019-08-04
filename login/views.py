@@ -1,12 +1,65 @@
 from django.shortcuts import render, redirect
 from . import models, forms
+import cv2
+import numpy
+from model_1.network import MCNN
+import tensorflow as tf
+'''
 import hashlib
 import datetime
 from django.conf import settings
+from django.http import HttpResponse
+import time
+'''
+from django.http import JsonResponse
+from login.tools import *
+import time
+
 # Create your views here.
 
+def uploadImg(request):
+    if request.method == "POST":
+        file = request.FILES.get('image', None)
+        print(file)
+        print(file.size)
 
-def hash_code(s, salt='ClassStu'):
+        if not file:
+            print('未找到文件')
+        md5 = GetFileMd5(file)
+        imgobj = models.UpImage.objects.filter(imgMd5=md5)
+        if not imgobj:
+            size = file.size
+            if not FileSize(size):
+                info = {'code': 403, 'error': '文件太大'}
+                return JsonResponse(info)
+            ext = os.path.splitext(file.name)[1]          # ext是‘.jpg’
+            print(ext)
+            if not JudgeType(ext):
+                info = {'code': 4032, 'error': '文件类型错误'}
+                return JsonResponse(info)
+            path = ReName(file)
+
+            name = os.path.basename(path)
+            create = models.UpImage.objects.create(imgName=name,
+                                                   imgMd5=md5,
+                                                   imgType=ext,
+                                                   imgSize=size,
+                                                   imgPath=path)
+            dataset = 'B'
+            mcnn = MCNN(dataset)
+            result = int(mcnn.predict())
+            return render(request, 'index.html', locals())
+        else:
+            path = ReName(file)
+            print('1')
+            dataset = 'B'
+            mcnn = MCNN(dataset)
+            result = int(mcnn.predict())
+            print(result)
+            return render(request, 'index.html', locals())
+
+
+def hash_code(s, salt='mysite'):
     h = hashlib.sha256()
     s += salt
     h.update(s.encode())
@@ -17,14 +70,13 @@ def index(request):
     if not request.session.get('is_login', None):
         return redirect('/login/')
     request.session['is_login'] = False
-    picture = models.Picture()
-    picture.image = images
-    return render(request, 'index.html')
+    return render(request, 'index.html', locals())
+
 
 
 def login(request):
     if request.session.get('is_login', None):  # 不允许重复登录
-        return redirect('/index/')
+        return redirect('/index/', locals())
     if request.method == 'POST':
         login_form = forms.UserForm(request.POST)
         message = '请检查填写的内容！'
@@ -38,10 +90,10 @@ def login(request):
                 message = '用户不存在！'
                 return render(request, 'login.html', locals())
 
-            '''if not user.has_confirmed:
-                message = '该用户还未经过邮件确认！'
-                return render(request, 'login.html', locals())
-'''
+            #if not user.has_confirmed:
+             #   message = '该用户还未经过邮件确认！'
+              #  return render(request, 'login.html', locals())
+
             if user.password == hash_code(password):
                 request.session['is_login'] = True
                 request.session['user_id'] = user.id
@@ -51,6 +103,7 @@ def login(request):
                 message = '密码不正确！'
                 return render(request, 'login.html', locals())
         else:
+            print('111')
             return render(request, 'login.html', locals())
 
     login_form = forms.UserForm()
@@ -58,6 +111,7 @@ def login(request):
 
 
 def register(request):
+    rect = 0
     if request.session.get('is_login', None):
         return redirect('/index/')
 
@@ -79,7 +133,7 @@ def register(request):
                 if same_name_user:
                     message = '用户名已经存在'
                     return render(request, 'register.html', locals())
-                #same_email_user = models.User.objects.filter(email=email)
+                #same_email_user = model_1.User.objects.filter(email=email)
                 #if same_email_user:
                    # message = '该邮箱已经被注册了！'
                    # return render(request, 'register.html', locals())
@@ -90,6 +144,10 @@ def register(request):
                 #new_user.email = email
                 new_user.sex = sex
                 new_user.save()
+                message = '注册成功'
+                rect = 1
+                time.sleep(3)
+                return redirect('/login/', locals())
 
                # code = make_confirm_string(new_user)
                 #send_email(email, code)
@@ -114,7 +172,7 @@ def logout(request):
 #邮件确认
 
 
-'''def user_confirm(request):
+def user_confirm(request):
     code = request.GET.get('code', None)
     message = ''
     try:
@@ -134,7 +192,7 @@ def logout(request):
         confirm.delete()
         message = '感谢确认！'
         return render(request, 'confirm.html', locals())
-'''
+
 
 def make_confirm_string(user):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -143,25 +201,26 @@ def make_confirm_string(user):
     return code
 
 
-'''def send_email(email, code):
+def send_email(email, code):
 
     from django.core.mail import EmailMultiAlternatives
 
     subject = '来自学生管理系统的注册确认邮件'
 
-    text_content = 感谢注册学生管理系统，
-                    如果你看到这条消息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！
+    text_content = '''感谢注册学生管理系统，
+                    如果你看到这条消息，说明你的邮箱服务器不提供HTML链接功能，请联系管理员！'''
 
-    html_content = 
+    html_content = '''
                     <p>感谢注册<a href="http://{}/confirm/?code={}" target=blank>www.classdect.cn</a>，\
                     </p>
                     <p>请点击站点链接完成注册确认！</p>
                     <p>此链接有效期为{}天！</p>
-                    .format('127.0.0.1:8000', code, settings.CONFIRM_DAYS)
+                    '''.format('127.0.0.1:8000', code, settings.CONFIRM_DAYS)
 
     msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [email])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
 
 def user_confirm(request):
     code = request.GET.get('code', None)
@@ -184,7 +243,7 @@ def user_confirm(request):
         confirm.delete()
         message = '感谢确认，请使用账户登录！'
         return render(request, 'confirm.html', locals())
-'''
+
 
 
 

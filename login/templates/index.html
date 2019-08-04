@@ -12,16 +12,18 @@
 		reader.onloadend = function () {
 			preview.src = reader.result;
 		}
+
 		if (file) {
+		    alert("文件存在");
 			reader.readAsDataURL(file);
 			}
-		else {
-			preview.src = "";
-		}
+		else{
+		    alert('请重新上传')
+        }
 	}
-	function returnResult(){
 
-		alert("这张图片的结果为......")
+	function returnResult(){
+		alert("图片中的人数为"+{{result}});
 	}
 </script>
 </head>
@@ -29,20 +31,31 @@
 <body>
 	<div id="container">
 		<div id="getJPG">
-			<input type="file" onchange="previewFile()">上传图片<br>
+            <form  action="/uploadImg/" method="post" data-ajax="false" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="image" type="file"onchange="previewFile()"/>上传图片<br><br><br>
+                <br>
+                <button type="submit">提交</button>
+            </form>
+
 
 		</div>
 			<br>
         <div id="img">
             <a>
-				<img src=""   alt="Image preview..."/>
+				<img src="logo.jpg"   alt="图片展示区"/>
 			</a>
+        </div>
+        <br>
+        <br>
+        <div id="getJPG">
+            <button onclick="returnResult()">检测</button>
         </div>
 
 
-		<div>
-			<button type="submit" onclick="returnResult()">提交</button>
-		</div>
+
+
+
 	</div>
 
 </body>

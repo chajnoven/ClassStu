@@ -24,6 +24,8 @@ urlpatterns = [
     path('login/', views.login),
     path('register/', views.register),
     path('logout/', views.logout),
+    path('uploadImg/', views.uploadImg),
     #path('confirm/', views.user_confirm),
     path('captcha/', include('captcha.urls'))
+
 ]

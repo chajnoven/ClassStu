@@ -1,8 +1,8 @@
 from django.contrib import admin
 from . import models
 
-# Register your models here.
+# Register your model_1 here.
 
 
 admin.site.register(models.User)
-#admin.site.register(models.ConfirmString)
+#admin.site.register(model_1.ConfirmString)

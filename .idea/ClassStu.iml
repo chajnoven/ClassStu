@@ -21,7 +21,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/../ClassStu\templates" />
+        <option value="$USER_HOME$/ClassStu\templates" />
       </list>
     </option>
   </component>
